@@ -83,7 +83,7 @@ def main():
                         cv2.circle(img, (cursor_cv_x, cursor_cv_y), 5, (0, 0, 255),
                                    lineType=cv2.LINE_8, thickness=5)
 
-                        cv2.drawMarker(img, (int(landmark.x*cv_w), int(landmark.y*cv_h)), (255, 165, 0),
+                        cv2.drawMarker(img, (int(landmark.x*cv_w), int(landmark.y*cv_h)), (0, 165, 255),
                                        markerType=cv2.MARKER_CROSS, markerSize=3, thickness=5)
 
                     # マウス判定用
