@@ -59,7 +59,7 @@ def main():
                         # モニター上の座標を計算
                         cursor_monitor_x, cursor_monitor_y = int(
                             cursor_x*gui_w), int(cursor_y*gui_h)
-                        # [1,MONITOR_SIZE]->[1,MONITOR_SIZE-2] pyautogui.FailSafeExceptionを回避
+                        # [0,MONITOR_SIZE]->[1,MONITOR_SIZE-2] pyautogui.FailSafeExceptionを回避
                         cursor_monitor_x = clamp(cursor_monitor_x,1,gui_w-2)
                         cursor_monitor_y = clamp(cursor_monitor_y,1,gui_h-2)
 
