@@ -5,10 +5,23 @@ import mediapipe as mp
 import pyautogui as gui
 import math
 import time
+import argparse
+
+
+def get_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--debug', action='store_true')
+
+    args = parser.parse_args()
+    return args
 
 
 def main():
     def clamp(x, MIN, MAX): return max(MIN, min(x, MAX))
+
+    # 引数解析
+    args = get_args()
 
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 960)
@@ -23,19 +36,20 @@ def main():
     mpDraw = mp.solutions.drawing_utils
     mpDrawStyles = mp.solutions.drawing_styles
 
-    fontpath = '.\data\msgothic.ttc'
-    font = ImageFont.truetype(fontpath, 30)
+    font = cv2.FONT_HERSHEY_SIMPLEX
 
     gui_w, gui_h = gui.size()
 
     CURSOR_INTERVAL = 0.1
+    SCROLL_INTERVAL = 0.5
+    SCROLL_AMOUNT = 300
     CLICK_THRESHOLD = 40
-
-    go = True  # デバッグ用
 
     cursor_time = time.time()
     cursor_aria = {'x': [0.25, 0.75], 'y': [0.25, 0.75]}
     prev_distances = {'l': 999, 'r': 999, 'ld': 999}
+
+    scroll_time = time.time()
 
     while True:
         success, img = cap.read()
@@ -60,8 +74,8 @@ def main():
                         cursor_monitor_x, cursor_monitor_y = int(
                             cursor_x*gui_w), int(cursor_y*gui_h)
                         # [0,MONITOR_SIZE]->[1,MONITOR_SIZE-2] pyautogui.FailSafeExceptionを回避
-                        cursor_monitor_x = clamp(cursor_monitor_x,1,gui_w-2)
-                        cursor_monitor_y = clamp(cursor_monitor_y,1,gui_h-2)
+                        cursor_monitor_x = clamp(cursor_monitor_x, 1, gui_w-2)
+                        cursor_monitor_y = clamp(cursor_monitor_y, 1, gui_h-2)
 
                         # 描画
                         cursor_cv_x, cursor_cv_y = int(
@@ -69,7 +83,7 @@ def main():
                         cv2.circle(img, (cursor_cv_x, cursor_cv_y), 5, (0, 0, 255),
                                    lineType=cv2.LINE_8, thickness=5)
 
-                        cv2.drawMarker(img, (int(landmark.x*cv_w), int(landmark.y*cv_h)), (0, 180, 248),
+                        cv2.drawMarker(img, (int(landmark.x*cv_w), int(landmark.y*cv_h)), (255, 165, 0),
                                        markerType=cv2.MARKER_CROSS, markerSize=3, thickness=5)
 
                     # マウス判定用
@@ -83,7 +97,7 @@ def main():
                     if id == 12:  # 中指の先端
                         l_cv_x, l_cv_y = int(
                             landmark.x*cv_w), int(landmark.y*cv_h)
-                        cv2.drawMarker(img, (l_cv_x, l_cv_y), (0, 0, 255),
+                        cv2.drawMarker(img, (l_cv_x, l_cv_y), (0, 255, 255),
                                        markerType=cv2.MARKER_CROSS, markerSize=3, thickness=5)
 
                         # 右クリック
@@ -100,6 +114,20 @@ def main():
                         cv2.drawMarker(img, (ld_cv_x, ld_cv_y), (205, 90, 106),
                                        markerType=cv2.MARKER_CROSS, markerSize=3, thickness=5)
 
+                        # 上スクロール
+                    if id == 20:  # 小指の先端
+                        mu_cv_x, mu_cv_y = int(
+                            landmark.x*cv_w), int(landmark.y*cv_h)
+                        cv2.drawMarker(img, (mu_cv_x, mu_cv_y), (45, 82, 160),
+                                       markerType=cv2.MARKER_CROSS, markerSize=3, thickness=5)
+
+                        # 下スクロール
+                    if id == 17:  # 小指の付け根
+                        md_cv_x, md_cv_y = int(
+                            landmark.x*cv_w), int(landmark.y*cv_h)
+                        cv2.drawMarker(img, (md_cv_x, md_cv_y), (250, 235, 215),
+                                       markerType=cv2.MARKER_CROSS, markerSize=3, thickness=5)
+
                 # 距離を計算
                 distances = {}
                 distances['l'] = math.sqrt(
@@ -108,6 +136,10 @@ def main():
                     (trig_cv_x-r_cv_x)**2+(trig_cv_y-r_cv_y)**2)
                 distances['ld'] = math.sqrt(
                     (trig_cv_x-ld_cv_x)**2+(trig_cv_y-ld_cv_y)**2)
+                distances['mu'] = math.sqrt(
+                    (trig_cv_x-mu_cv_x)**2+(trig_cv_y-mu_cv_y)**2)
+                distances['md'] = math.sqrt(
+                    (trig_cv_x-md_cv_x)**2+(trig_cv_y-md_cv_y)**2)
 
                 # 描画
                 cv2.line(img, (trig_cv_x, trig_cv_y), (l_cv_x, l_cv_y),
@@ -116,26 +148,29 @@ def main():
                          ((255, 255, 0) if distances['r'] >= CLICK_THRESHOLD else (255, 0, 255)), thickness=1, lineType=cv2.LINE_8)
                 cv2.line(img, (trig_cv_x, trig_cv_y), (ld_cv_x, ld_cv_y),
                          ((255, 255, 0) if distances['ld'] >= CLICK_THRESHOLD else (255, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.line(img, (trig_cv_x, trig_cv_y), (mu_cv_x, mu_cv_y),
+                         ((255, 255, 0) if distances['mu'] >= CLICK_THRESHOLD else (255, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.line(img, (trig_cv_x, trig_cv_y), (md_cv_x, md_cv_y),
+                         ((255, 255, 0) if distances['md'] >= CLICK_THRESHOLD else (255, 0, 255)), thickness=1, lineType=cv2.LINE_8)
 
                 cv2.rectangle(img, (int(cursor_aria['x'][0]*cv_w), int(cursor_aria['y'][0]*cv_h)), (int(
                     cursor_aria['x'][1]*cv_w), int(cursor_aria['y'][1]*cv_h)), (0, 0, 0), thickness=3, lineType=cv2.LINE_8)
 
                 # 数値表示
-                img_pil = Image.fromarray(img)
-                draw = ImageDraw.Draw(img_pil)
                 # 距離
-                draw.text((trig_cv_x, trig_cv_y + 10), str(int(distances['l'])),  fill=((255, 144, 30) if distances['l'] >= CLICK_THRESHOLD else (0, 0, 255)),
-                          font=font,  stroke_width=1, stroke_fill=((255, 144, 30) if distances['l'] >= CLICK_THRESHOLD else (0, 0, 255)))
-                draw.text((trig_cv_x, trig_cv_y + 45), str(int(distances['r'])),  fill=((255, 144, 30) if distances['r'] >= CLICK_THRESHOLD else (0, 0, 255)),
-                          font=font,  stroke_width=1, stroke_fill=((255, 144, 30) if distances['r'] >= CLICK_THRESHOLD else (0, 0, 255)))
-                draw.text((trig_cv_x, trig_cv_y + 80), str(int(distances['ld'])),  fill=((255, 144, 30) if distances['ld'] >= CLICK_THRESHOLD else (0, 0, 255)),
-                          font=font,  stroke_width=1, stroke_fill=((255, 144, 30) if distances['ld'] >= CLICK_THRESHOLD else (0, 0, 255)))
-                # カーソル位置
-                draw.text((10, 5), f'({cursor_x:.2f},{cursor_y:.2f})',  fill=(0, 255, 0),
-                          font=font,  stroke_width=1, stroke_fill=(0, 255, 0))
-                img = np.array(img_pil)
+                #cv2.putText(img, text, (lm_x, lm_y + 10 * cnt), font, 0.3, lm_c, 1)
+                cv2.putText(img, str(int(distances['l'])), (trig_cv_x, trig_cv_y + 10), font, 0.3, ((
+                    255, 144, 30) if distances['l'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.putText(img, str(int(distances['r'])), (trig_cv_x, trig_cv_y + 20), font, 0.3, ((
+                    255, 144, 30) if distances['r'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.putText(img, str(int(distances['ld'])), (trig_cv_x, trig_cv_y + 30), font, 0.3, ((
+                    255, 144, 30) if distances['ld'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.putText(img, str(int(distances['mu'])), (trig_cv_x, trig_cv_y + 40), font, 0.3, ((
+                    255, 144, 30) if distances['mu'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.putText(img, str(int(distances['md'])), (trig_cv_x, trig_cv_y + 50), font, 0.3, ((
+                    255, 144, 30) if distances['md'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
 
-                if go:
+                if not args.debug:
                     # カーソル移動
                     if (time.time() - cursor_time) > CURSOR_INTERVAL:
                         gui.moveTo(cursor_monitor_x, cursor_monitor_y)
@@ -162,6 +197,16 @@ def main():
                     elif (prev_distances['ld'] >= CLICK_THRESHOLD) & (distances['ld'] < CLICK_THRESHOLD):
                         gui.mouseDown(button='left')
                         prev_distances['ld'] = distances['ld']
+
+                    # 上スクロール
+                    if (distances['mu'] < CLICK_THRESHOLD) & ((time.time() - scroll_time) > SCROLL_INTERVAL):
+                        gui.scroll(SCROLL_AMOUNT)
+                        scroll_time = time.time()
+
+                    # 下スクロール
+                    if (distances['md'] < CLICK_THRESHOLD) & ((time.time() - scroll_time) > SCROLL_INTERVAL):
+                        gui.scroll(SCROLL_AMOUNT*-1)
+                        scroll_time = time.time()
 
                 # mpDraw.draw_landmarks(
                 #     img,
