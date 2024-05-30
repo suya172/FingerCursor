@@ -6,6 +6,8 @@ webカメラを使ったマウス操作
 - https://qiita.com/run1000dori/items/301bb63c8a69c3fcb1bd
 - https://techceed-inc.com/engineer_blog/6921/
 - https://pyautogui.readthedocs.io/en/latest/quickstart.html#
+- https://blog.capilano-fw.com/?p=9955
+- https://qiita.com/taashi/items/07bf75201a074e208ae5
 ## 使い方
 下記のコマンドを実行して必要なモジュールをインストールした後、`Main.py`を実行
 
