@@ -12,6 +12,7 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--debug', action='store_true')
+    parser.add_argument('--device',type=int,default=0)
 
     args = parser.parse_args()
     return args
@@ -23,7 +24,15 @@ def main():
     # 引数解析
     args = get_args()
 
-    cap = cv2.VideoCapture(0)
+    debug = args.debug
+    cap_device = args.device
+
+    # Webカメラ設定
+    WINDOW_NAME = 'FingerCursor'
+    cv2.namedWindow(WINDOW_NAME)
+    cap = cv2.VideoCapture(cap_device)
+    cap.set(cv2.CAP_PROP_FPS, 60)
+    cap_fps = int(cap.get(cv2.CAP_PROP_FPS))
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 960)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 540)
 
@@ -45,13 +54,14 @@ def main():
     SCROLL_AMOUNT = 300
     CLICK_THRESHOLD = 40
 
-    cursor_time = time.time()
+    cursor_time = time.perf_counter()
     cursor_aria = {'x': [0.25, 0.75], 'y': [0.25, 0.75]}
     prev_distances = {'l': 999, 'r': 999, 'ld': 999}
 
-    scroll_time = time.time()
+    scroll_time = time.perf_counter()
 
     while True:
+        p_a = time.perf_counter()
         success, img = cap.read()
         img = cv2.flip(img, 1)
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -155,26 +165,13 @@ def main():
 
                 cv2.rectangle(img, (int(cursor_aria['x'][0]*cv_w), int(cursor_aria['y'][0]*cv_h)), (int(
                     cursor_aria['x'][1]*cv_w), int(cursor_aria['y'][1]*cv_h)), (0, 0, 0), thickness=3, lineType=cv2.LINE_8)
+                
 
-                # 数値表示
-                # 距離
-                #cv2.putText(img, text, (lm_x, lm_y + 10 * cnt), font, 0.3, lm_c, 1)
-                cv2.putText(img, str(int(distances['l'])), (trig_cv_x, trig_cv_y + 10), font, 0.3, ((
-                    255, 144, 30) if distances['l'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
-                cv2.putText(img, str(int(distances['r'])), (trig_cv_x, trig_cv_y + 20), font, 0.3, ((
-                    255, 144, 30) if distances['r'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
-                cv2.putText(img, str(int(distances['ld'])), (trig_cv_x, trig_cv_y + 30), font, 0.3, ((
-                    255, 144, 30) if distances['ld'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
-                cv2.putText(img, str(int(distances['mu'])), (trig_cv_x, trig_cv_y + 40), font, 0.3, ((
-                    255, 144, 30) if distances['mu'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
-                cv2.putText(img, str(int(distances['md'])), (trig_cv_x, trig_cv_y + 50), font, 0.3, ((
-                    255, 144, 30) if distances['md'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
-
-                if not args.debug:
+                if not debug:
                     # カーソル移動
-                    if (time.time() - cursor_time) > CURSOR_INTERVAL:
+                    if (time.perf_counter() - cursor_time) > CURSOR_INTERVAL:
                         gui.moveTo(cursor_monitor_x, cursor_monitor_y)
-                        cursor_time = time.time()
+                        cursor_time = time.perf_counter()
 
                     # 左クリック
                     if (prev_distances['l'] < CLICK_THRESHOLD) & (distances['l'] >= CLICK_THRESHOLD):
@@ -199,14 +196,33 @@ def main():
                         prev_distances['ld'] = distances['ld']
 
                     # 上スクロール
-                    if (distances['mu'] < CLICK_THRESHOLD) & ((time.time() - scroll_time) > SCROLL_INTERVAL):
+                    if (distances['mu'] < CLICK_THRESHOLD) & ((time.perf_counter() - scroll_time) > SCROLL_INTERVAL):
                         gui.scroll(SCROLL_AMOUNT)
-                        scroll_time = time.time()
+                        scroll_time = time.perf_counter()
 
                     # 下スクロール
-                    if (distances['md'] < CLICK_THRESHOLD) & ((time.time() - scroll_time) > SCROLL_INTERVAL):
+                    if (distances['md'] < CLICK_THRESHOLD) & ((time.perf_counter() - scroll_time) > SCROLL_INTERVAL):
                         gui.scroll(SCROLL_AMOUNT*-1)
-                        scroll_time = time.time()
+                        scroll_time = time.perf_counter()
+
+                
+                # 数値表示
+                    # 距離
+                cv2.putText(img, str(int(distances['l'])), (trig_cv_x, trig_cv_y + 10), font, 0.3, ((
+                    255, 144, 30) if distances['l'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.putText(img, str(int(distances['r'])), (trig_cv_x, trig_cv_y + 20), font, 0.3, ((
+                    255, 144, 30) if distances['r'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.putText(img, str(int(distances['ld'])), (trig_cv_x, trig_cv_y + 30), font, 0.3, ((
+                    255, 144, 30) if distances['ld'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.putText(img, str(int(distances['mu'])), (trig_cv_x, trig_cv_y + 40), font, 0.3, ((
+                    255, 144, 30) if distances['mu'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                cv2.putText(img, str(int(distances['md'])), (trig_cv_x, trig_cv_y + 50), font, 0.3, ((
+                    255, 144, 30) if distances['md'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
+                    # FPS
+                cv2.putText(img, "cameraFPS:"+str(cap_fps), (20, 40),font, 1, (0, 255, 0), thickness=2, lineType=cv2.LINE_8)
+                p_un = time.perf_counter()
+                fps = str(int(1/(float(p_un)-float(p_a))))
+                cv2.putText(img, "FPS:"+fps, (20, 80),font, 1, (0, 255, 0), 2, lineType=cv2.LINE_8)
 
                 # mpDraw.draw_landmarks(
                 #     img,
@@ -219,7 +235,7 @@ def main():
                 gui.mouseUp(button='left')
             for k in prev_distances.keys():
                 prev_distances[k] = 999
-        cv2.imshow('MediaPipe Hands', img)
+        cv2.imshow(WINDOW_NAME, img)
         if cv2.waitKey(1) & 0xFF == ord('c'):
             break
     cap.release()
