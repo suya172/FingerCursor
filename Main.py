@@ -12,7 +12,11 @@ def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--device',type=int,default=0)
+    parser.add_argument('--device','-d',type=int,default=0)
+    parser.add_argument('-x0',type=float,default=0.25)
+    parser.add_argument('-x1',type=float,default=0.75)
+    parser.add_argument('-y0',type=float,default=0.45)
+    parser.add_argument('-y1',type=float,default=0.95)
 
     args = parser.parse_args()
     return args
@@ -55,7 +59,7 @@ def main():
     CLICK_THRESHOLD = 40
 
     cursor_time = time.perf_counter()
-    cursor_aria = {'x': [0.25, 0.75], 'y': [0.25, 0.75]}
+    cursor_aria = {'x': [args.x0, args.x1], 'y': [args.y0, args.y1]}
     prev_distances = {'l': 999, 'r': 999, 'ld': 999}
 
     scroll_time = time.perf_counter()
