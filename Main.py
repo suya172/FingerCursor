@@ -11,12 +11,18 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--debug', action='store_true')
-    parser.add_argument('--device','-d',type=int,default=0)
-    parser.add_argument('-x0',type=float,default=0.25)
-    parser.add_argument('-x1',type=float,default=0.75)
-    parser.add_argument('-y0',type=float,default=0.45)
-    parser.add_argument('-y1',type=float,default=0.95)
+    parser.add_argument('--debug',help='Debug Mode',action='store_true')
+    parser.add_argument('--device','-d',help='Capture device number',type=int,default=0)
+    parser.add_argument('-x0',help='Detection frame',type=float,default=0.25)
+    parser.add_argument('-x1',help='Detection frame',type=float,default=0.75)
+    parser.add_argument('-y0',help='Detection frame',type=float,default=0.45)
+    parser.add_argument('-y1',help='Detection frame',type=float,default=0.95)
+    parser.add_argument('--threshold',help='Threshold for detecting clicks',type=int,default=40)
+    parser.add_argument('--scroll_amount',help='Amount of scrolling at a time',type=int,default=300)
+    parser.add_argument('--cursor_interval',help='Interval to move the cursor',type=float,default=0.1)
+    parser.add_argument('--scroll_interval',help='Interval to scroll',type=float,default=0.5)
+    parser.add_argument("--cap_width", help='Width of frame', type=int, default=960)
+    parser.add_argument("--cap_height", help='Height of frame', type=int, default=540)
 
     args = parser.parse_args()
     return args
@@ -29,16 +35,22 @@ def main():
     args = get_args()
 
     debug = args.debug
-    cap_device = args.device
+    CAP_DEVICE = args.device
+    CURSOR_INTERVAL = args.cursor_interval
+    SCROLL_INTERVAL = args.scroll_interval
+    SCROLL_AMOUNT = args.scroll_amount
+    CLICK_THRESHOLD = args.threshold
+    CAP_WIDTH = args.cap_width
+    CAP_HEIGHT = args.cap_height
 
     # Webカメラ設定
     WINDOW_NAME = 'FingerCursor'
     cv2.namedWindow(WINDOW_NAME)
-    cap = cv2.VideoCapture(cap_device)
+    cap = cv2.VideoCapture(CAP_DEVICE)
     cap.set(cv2.CAP_PROP_FPS, 60)
     cap_fps = int(cap.get(cv2.CAP_PROP_FPS))
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 960)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 540)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, CAP_WIDTH)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, CAP_HEIGHT)
 
     mpHands = mp.solutions.hands
     hands = mpHands.Hands(
@@ -52,11 +64,6 @@ def main():
     font = cv2.FONT_HERSHEY_SIMPLEX
 
     gui_w, gui_h = gui.size()
-
-    CURSOR_INTERVAL = 0.1
-    SCROLL_INTERVAL = 0.5
-    SCROLL_AMOUNT = 300
-    CLICK_THRESHOLD = 40
 
     cursor_time = time.perf_counter()
     cursor_aria = {'x': [args.x0, args.x1], 'y': [args.y0, args.y1]}
