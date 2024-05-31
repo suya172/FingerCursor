@@ -8,6 +8,8 @@ webカメラを使ったマウス操作
 - https://pyautogui.readthedocs.io/en/latest/quickstart.html#
 - https://blog.capilano-fw.com/?p=9955
 - https://qiita.com/taashi/items/07bf75201a074e208ae5
+- https://github.com/takeyamayuki/NonMouse
+- https://github.com/Kazuhito00/simple-virtual-mouse-using-mediapipe
 ## 使い方
 下記のコマンドを実行して必要なモジュールをインストールした後、`Main.py`を実行
 
@@ -17,9 +19,9 @@ pip install -r requirements.txt
 ```
 引数に`--debug`を追加するとデバッグモードになり、マウス操作が行われません
 ## todo
-- ジェスチャー検出でスクロール(?)(人差し指を回す動き等)
+- ジェスチャー検出で緊急停止等
 - 手ぶれ補正
-- コマンドライン引数で指定できる値を増やす
-- カーソル移動枠の設定をやりやすくする(ex:縦横比はモニターのそれと同じものに固定して大きさの倍率のみ指定し、位置はあらかじめ決まっているものを番号で指定)
-- FPS管理
 - どうやったらぬるぬる動くん？
+- 効果音
+- GUI化
+- 画面をcv2.resizeでコンパクトに(撮影時は大きくしておく)
