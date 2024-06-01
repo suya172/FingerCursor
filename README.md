@@ -11,11 +11,17 @@ pip install -r requirements.txt
 |----|----|
 |--help -h|引数の説明を表示|
 |--debug|デバッグモード　マウス操作が行われなくなる|
-|--device -d|デバイスを指定
+|--device -d|デバイスを指定|
 |-x0|検知枠の左端のx座標|
 |-x1|検知枠の右端のx座標|
 |-y0|検知枠の上端のy座標|
 |-y1|検知枠の下端のy座標|
+|--threshold|クリックを検知する距離の閾値|
+|--scroll_amount|一度にスクロールする量|
+|--cursor_interval|カーソルが動く間隔(秒)|
+|--scroll_interval|スクロールする間隔(秒)|
+|--cap_width|キャプチャする画像の幅|
+|--cap_height|キャプチャする画像の高さ|
 ## 参考サイト
 - https://qiita.com/blueman/items/66ef82e3bf03dfca62bb
 - https://yoppa.org/mit-design4-22/14113.html
