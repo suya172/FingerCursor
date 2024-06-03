@@ -40,4 +40,4 @@ pip install -r requirements.txt
 - GUI化
 - 画面をcv2.resizeでコンパクトに(撮影時は大きくしておく)
 
-<a href="[URL](https://www.youtube.com/playlist?list=PLl4iqWGjZ6vj1kTsjoRaQfSLEqe33ie3V)" target="_blank" rel="noopener noreferrer">Youtubeに進捗を載せています</a>
+[Youtubeに進捗を載せています](https://www.youtube.com/playlist?list=PLl4iqWGjZ6vj1kTsjoRaQfSLEqe33ie3V)
