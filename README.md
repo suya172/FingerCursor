@@ -39,3 +39,5 @@ pip install -r requirements.txt
 - 効果音
 - GUI化
 - 画面をcv2.resizeでコンパクトに(撮影時は大きくしておく)
+
+[Youtubeで進捗載せてます](https://www.youtube.com/playlist?list=PLl4iqWGjZ6vj1kTsjoRaQfSLEqe33ie3V)
