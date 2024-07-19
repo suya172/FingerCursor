@@ -22,6 +22,8 @@ pip install -r requirements.txt
 |--scroll_interval|スクロールする間隔(秒)|
 |--cap_width|キャプチャする画像の幅|
 |--cap_height|キャプチャする画像の高さ|
+### 操作方法
+//todo
 ## 参考サイト
 - https://qiita.com/blueman/items/66ef82e3bf03dfca62bb
 - https://yoppa.org/mit-design4-22/14113.html
