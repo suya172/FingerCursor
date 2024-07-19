@@ -11,18 +11,29 @@ import argparse
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--debug',help='Debug Mode',action='store_true')
-    parser.add_argument('--device','-d',help='Capture device number',type=int,default=0)
-    parser.add_argument('-x0',help='Detection frame',type=float,default=0.25)
-    parser.add_argument('-x1',help='Detection frame',type=float,default=0.75)
-    parser.add_argument('-y0',help='Detection frame',type=float,default=0.45)
-    parser.add_argument('-y1',help='Detection frame',type=float,default=0.95)
-    parser.add_argument('--threshold',help='Threshold for detecting clicks',type=int,default=40)
-    parser.add_argument('--scroll_amount',help='Amount of scrolling at a time',type=int,default=300)
-    parser.add_argument('--cursor_interval',help='Interval to move the cursor',type=float,default=0.1)
-    parser.add_argument('--scroll_interval',help='Interval to scroll',type=float,default=0.5)
-    parser.add_argument("--cap_width", help='Width of frame', type=int, default=960)
-    parser.add_argument("--cap_height", help='Height of frame', type=int, default=540)
+    parser.add_argument('--debug', help='Debug Mode', action='store_true')
+    parser.add_argument(
+        '--device', '-d', help='Capture device number', type=int, default=0)
+    parser.add_argument('-x0', help='Detection frame',
+                        type=float, default=0.25)
+    parser.add_argument('-x1', help='Detection frame',
+                        type=float, default=0.75)
+    parser.add_argument('-y0', help='Detection frame',
+                        type=float, default=0.45)
+    parser.add_argument('-y1', help='Detection frame',
+                        type=float, default=0.95)
+    parser.add_argument(
+        '--threshold', help='Threshold for detecting clicks', type=int, default=40)
+    parser.add_argument(
+        '--scroll_amount', help='Amount of scrolling at a time', type=int, default=300)
+    parser.add_argument(
+        '--cursor_interval', help='Interval to move the cursor', type=float, default=0.1)
+    parser.add_argument('--scroll_interval',
+                        help='Interval to scroll', type=float, default=0.5)
+    parser.add_argument("--cap_width", help='Width of frame',
+                        type=int, default=960)
+    parser.add_argument(
+        "--cap_height", help='Height of frame', type=int, default=540)
 
     args = parser.parse_args()
     return args
@@ -175,8 +186,7 @@ def main():
                          ((255, 255, 0) if distances['md'] >= CLICK_THRESHOLD else (255, 0, 255)), thickness=1, lineType=cv2.LINE_8)
 
                 cv2.rectangle(img, (int(cursor_aria['x'][0]*cv_w), int(cursor_aria['y'][0]*cv_h)), (int(
-                    cursor_aria['x'][1]*cv_w), int(cursor_aria['y'][1]*cv_h)), (0, 0, 0), thickness=3, lineType=cv2.LINE_8)
-                
+                    cursor_aria['x'][1]*cv_w), int(cursor_aria['y'][1]*cv_h)), (0, 255, 0), thickness=2, lineType=cv2.LINE_8)
 
                 if not debug:
                     # カーソル移動
@@ -216,7 +226,6 @@ def main():
                         gui.scroll(SCROLL_AMOUNT*-1)
                         scroll_time = time.perf_counter()
 
-                
                 # 数値表示
                     # 距離
                 cv2.putText(img, str(int(distances['l'])), (trig_cv_x, trig_cv_y + 10), font, 0.3, ((
@@ -229,11 +238,13 @@ def main():
                     255, 144, 30) if distances['mu'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
                 cv2.putText(img, str(int(distances['md'])), (trig_cv_x, trig_cv_y + 50), font, 0.3, ((
                     255, 144, 30) if distances['md'] >= CLICK_THRESHOLD else (0, 0, 255)), thickness=1, lineType=cv2.LINE_8)
-                    # FPS
-                cv2.putText(img, "cameraFPS:"+str(cap_fps), (20, 40),font, 1, (0, 255, 0), thickness=2, lineType=cv2.LINE_8)
+                # FPS
+                cv2.putText(img, "cameraFPS:"+str(cap_fps), (20, 40),
+                            font, 1, (0, 255, 0), thickness=2, lineType=cv2.LINE_8)
                 p_un = time.perf_counter()
                 fps = str(int(1/(float(p_un)-float(p_a))))
-                cv2.putText(img, "FPS:"+fps, (20, 80),font, 1, (0, 255, 0), 2, lineType=cv2.LINE_8)
+                cv2.putText(img, "FPS:"+fps, (20, 80), font, 1,
+                            (0, 255, 0), 2, lineType=cv2.LINE_8)
 
                 # mpDraw.draw_landmarks(
                 #     img,
@@ -246,6 +257,8 @@ def main():
                 gui.mouseUp(button='left')
             for k in prev_distances.keys():
                 prev_distances[k] = 999
+        if not debug:
+            img = cv2.resize(img, None, None, fx=0.5, fy=0.5)
         cv2.imshow(WINDOW_NAME, img)
         if cv2.waitKey(1) & 0xFF == ord('c'):
             break

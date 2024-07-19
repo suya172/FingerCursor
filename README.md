@@ -24,7 +24,16 @@ pip install -r requirements.txt
 |--cap_width|キャプチャする画像の幅|
 |--cap_height|キャプチャする画像の高さ|
 ### 操作方法
-//todo
+カメラに手の平を写すとカーソルが動き始めます
+|**動作**|**方法**|
+|----|----|
+|カーソル移動|手を動かす|
+|左クリック|中指を親指に付ける→離す|
+|右クリック|人差し指を親指に付ける→離す|
+|左ドラッグ|人差し指を親指に付けたまま手を動かす|
+|上スクロール|小指を親指に付ける|
+|下スクロール|小指の付け根を親指に付ける|
+
 ## 参考サイト
 - https://qiita.com/blueman/items/66ef82e3bf03dfca62bb
 - https://yoppa.org/mit-design4-22/14113.html
@@ -39,8 +48,8 @@ pip install -r requirements.txt
 - ジェスチャー検出で緊急停止等
 - 手ぶれ補正
 - どうやったらぬるぬる動くん？
-- 効果音
+- 効果音(?)
 - GUI化
-- 画面をcv2.resizeでコンパクトに(撮影時は大きくしておく)
+- 操作方法に分かりやすいように画像を載せる
 
 [Youtubeに進捗を載せています](https://www.youtube.com/playlist?list=PLl4iqWGjZ6vj1kTsjoRaQfSLEqe33ie3V)
