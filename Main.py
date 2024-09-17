@@ -6,34 +6,36 @@ import pyautogui as gui
 import math
 import time
 import argparse
+import settings
 
 
 def get_args():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--debug', help='Debug Mode', action='store_true')
+    parser.add_argument('--debug', help='Debug Mode',
+                        action='store_true', default=settings.debug)
     parser.add_argument(
-        '--device', '-d', help='Capture device number', type=int, default=0)
+        '--device', '-d', help='Capture device number', type=int, default=settings.device)
     parser.add_argument('-x0', help='Detection frame',
-                        type=float, default=0.25)
+                        type=float, default=settings.x0)
     parser.add_argument('-x1', help='Detection frame',
-                        type=float, default=0.75)
+                        type=float, default=settings.x1)
     parser.add_argument('-y0', help='Detection frame',
-                        type=float, default=0.45)
+                        type=float, default=settings.y0)
     parser.add_argument('-y1', help='Detection frame',
-                        type=float, default=0.95)
-    parser.add_argument(
-        '--threshold', help='Threshold for detecting clicks', type=int, default=40)
-    parser.add_argument(
-        '--scroll_amount', help='Amount of scrolling at a time', type=int, default=300)
-    parser.add_argument(
-        '--cursor_interval', help='Interval to move the cursor', type=float, default=0.1)
-    parser.add_argument('--scroll_interval',
-                        help='Interval to scroll', type=float, default=0.5)
+                        type=float, default=settings.y1)
+    parser.add_argument('--threshold', help='Threshold for detecting clicks',
+                        type=int, default=settings.threshold)
+    parser.add_argument('--scroll_amount', help='Amount of scrolling at a time',
+                        type=int, default=settings.scroll_amount)
+    parser.add_argument('--cursor_interval', help='Interval to move the cursor',
+                        type=float, default=settings.cursor_interval)
+    parser.add_argument('--scroll_interval', help='Interval to scroll',
+                        type=float, default=settings.scroll_interval)
     parser.add_argument("--cap_width", help='Width of frame',
-                        type=int, default=960)
-    parser.add_argument(
-        "--cap_height", help='Height of frame', type=int, default=540)
+                        type=int, default=settings.width)
+    parser.add_argument("--cap_height", help='Height of frame',
+                        type=int, default=settings.height)
 
     args = parser.parse_args()
     return args
@@ -42,20 +44,21 @@ def get_args():
 def main():
     def clamp(x, MIN, MAX): return max(MIN, min(x, MAX))
 
-    # 引数解析
-    args = get_args()
-
-    debug = args.debug
-    CAP_DEVICE = args.device
-    CURSOR_INTERVAL = args.cursor_interval
-    SCROLL_INTERVAL = args.scroll_interval
-    SCROLL_AMOUNT = args.scroll_amount
-    CLICK_THRESHOLD = args.threshold
-    CAP_WIDTH = args.cap_width
-    CAP_HEIGHT = args.cap_height
+    debug: bool = settings.debug
+    CAP_DEVICE: int = settings.device
+    x0: float = settings.x0
+    x1: float = settings.x1
+    y0: float = settings.y0
+    y1: float = settings.y1
+    CLICK_THRESHOLD: int = settings.threshold
+    SCROLL_AMOUNT: int = settings.scroll_amount
+    CURSOR_INTERVAL: float = settings.cursor_interval
+    SCROLL_INTERVAL: float = settings.scroll_interval
+    CAP_WIDTH: int = settings.width
+    CAP_HEIGHT: int = settings.height
 
     # Webカメラ設定
-    WINDOW_NAME = 'FingerCursor'
+    WINDOW_NAME = 'Press "c" to close'
     cv2.namedWindow(WINDOW_NAME)
     cap = cv2.VideoCapture(CAP_DEVICE)
     cap.set(cv2.CAP_PROP_FPS, 60)
@@ -77,7 +80,7 @@ def main():
     gui_w, gui_h = gui.size()
 
     cursor_time = time.perf_counter()
-    cursor_aria = {'x': [args.x0, args.x1], 'y': [args.y0, args.y1]}
+    cursor_aria = {'x': [x0, x1], 'y': [y0, y1]}
     prev_distances = {'l': 999, 'r': 999, 'ld': 999}
 
     scroll_time = time.perf_counter()
@@ -266,4 +269,18 @@ def main():
 
 
 if __name__ == '__main__':
+    # 引数解析
+    args = get_args()
+    settings.debug = args.debug
+    settings.device = args.device
+    settings.x0 = args.x0
+    settings.x1 = args.x1
+    settings.y0 = args.y0
+    settings.y1 = args.y1
+    settings.threshold = args.threshold
+    settings.scroll_amount = args.scroll_amount
+    settings.cursor_interval = args.cursor_interval
+    settings.scroll_interval = args.scroll_interval
+    settings.width = args.cap_width
+    settings.height = args.cap_height
     main()
