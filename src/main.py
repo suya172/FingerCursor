@@ -6,7 +6,7 @@ import pyautogui as gui
 import math
 import time
 import argparse
-import settings
+import settings as settings
 
 
 def get_args():

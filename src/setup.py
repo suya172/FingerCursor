@@ -1,8 +1,8 @@
 import TkEasyGUI as eg
 import pyautogui as gui
 import subprocess
-import settings
-from Main import main
+import settings as settings
+from main import main
 
 WEB_SITE = "https://github.com/suya172/FingerCursor"
 gui_w, gui_h = gui.size()
